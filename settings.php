@@ -63,7 +63,43 @@ function fzami_init_register_settings() {
         __FILE__, // Page
         'display_settings' // Section to belong to
     );
-//------------------------ Display Settings -------------------------//
+//------------------------ Iqama Settings -------------------------//
+    add_settings_section('iqama_settings', // Unique ID
+        'Iqama Time Settings', // Name for this section
+        'fzami_iqama_section', // Function to call
+        __FILE__ // Page
+    );
+    add_settings_field('iqama_fajr_time',// Unique ID
+        'Fajr Iqama', // Name for this field
+        'fzami_iqama_fajr_time_field', //Function to call
+        __FILE__, // Page
+        'iqama_settings' // Section to belong to
+    );
+    add_settings_field('iqama_zuhr_time',// Unique ID
+        'Zuhr Iqama', // Name for this field
+        'fzami_iqama_zuhr_time_field', //Function to call
+        __FILE__, // Page
+        'iqama_settings' // Section to belong to
+    );
+    add_settings_field('iqama_asr_time',// Unique ID
+        'Asr Iqama', // Name for this field
+        'fzami_iqama_asr_time_field', //Function to call
+        __FILE__, // Page
+        'iqama_settings' // Section to belong to
+    );
+    add_settings_field('iqama_maghrib_time',// Unique ID
+        'Magrib Iqama', // Name for this field
+        'fzami_iqama_maghrib_time_field', //Function to call
+        __FILE__, // Page
+        'iqama_settings' // Section to belong to
+    );
+    add_settings_field('iqama_isha_time',// Unique ID
+        'Isha Iqama', // Name for this field
+        'fzami_iqama_isha_time_field', //Function to call
+        __FILE__, // Page
+        'iqama_settings' // Section to belong to
+    );
+//------------------------ Jumah Settings -------------------------//
     add_settings_section('jumah_settings', // Unique ID
         'Friday Prayer Settings', // Name for this section
         'fzami_jumah_section', // Function to call
@@ -118,6 +154,10 @@ function fzami_display_section() {
     echo '<p>You can change your display settings here.</p>';
 }
 
+function fzami_iqama_section() {
+    echo '<p>You can change your Iqama times here.</p>';
+}
+
 function fzami_jumah_section() {
     echo '<p>You can change your Friday prayer settings here.</p>';
 }
@@ -167,6 +207,30 @@ function fzami_calculate_asr_method_field() {
         "</select>";
 }
 
+function fzami_iqama_fajr_time_field() {
+    echo fzami_iqama_time_field('fajr');
+}
+
+function fzami_iqama_zuhr_time_field() {
+    echo fzami_iqama_time_field('zuhr');
+}
+
+function fzami_iqama_asr_time_field() {
+    echo fzami_iqama_time_field('asr');
+}
+
+function fzami_iqama_maghrib_time_field() {
+    echo fzami_iqama_time_field('maghrib');
+}
+
+function fzami_iqama_isha_time_field() {
+    echo fzami_iqama_time_field('isha');
+}
+
+function fzami_iqama_time_field($prayer) {
+    $options = get_option('fzami_options');
+    return "<input id='fzami_iqama_{$prayer}_input' name='fzami_options[iqama_{$prayer}]' type='text' value='" . $options['iqama_'.$prayer] . "' />";
+}
 
 function fzami_jumah_first_data_field() {
     fzami_jumah_data_field("first");
