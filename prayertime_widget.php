@@ -12,8 +12,8 @@ class PrayerTimeWidget extends WP_Widget
     }
 
     public function form($instance) {
-        $default = ['title' => 'Prayer Times',
-                    'show_iqama' => TRUE];
+        $default = array('title' => 'Prayer Times',
+                    'show_iqama' => TRUE);
         $instance = wp_parse_args( (array) $instance, $default );
         $title = $instance['title'];
         $show_iqama = $instance['show_iqama'];
@@ -75,25 +75,25 @@ class PrayerTimeWidget extends WP_Widget
         $prayTime->setTimeFormat($timeFormat);
         $times = $prayTime->getPrayerTimes(time(), $latitude, $longitude, $timeZone);
 
-        return [
+        return array(
             "fajr" => $times[0],
             "zuhr" => $times[2],
             "asr" => $times[3],
             "maghrib" => $times[5],
             "isha" => $times[6],
-        ];
+        );
     }
 
     protected function getIqamaTimes() {
         $options = get_option('fzami_options');
 
-        return [
+        return array(
             "fajr" => $options['iqama_fajr'],
             "zuhr" => $options['iqama_zuhr'],
             "asr"=> $options['iqama_asr'],
             "maghrib"=> $options['iqama_maghrib'],
             "isha" => $options['iqama_isha'],
-        ];
+        );
     }
 
     protected function getMarkup($pt, $it) {

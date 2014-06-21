@@ -35,7 +35,7 @@ add_action( 'wp_enqueue_scripts', 'fzami_styles' );
 function fzami_setup_options() {
     $options = get_option('fzami_options');
     if ($options === FALSE) {
-        $options = [
+        $options = array(
             'version' => '0.1',
             'calc_method' => '2',
             'latitude' => '30.3561811',
@@ -43,7 +43,7 @@ function fzami_setup_options() {
             'timezone' => '-5',
             'asr_format' => '1',
             'time_format' => '2',
-        ];
+        );
         add_option('fzami_options', $options);
     }
 }

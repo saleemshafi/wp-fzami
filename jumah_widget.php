@@ -11,7 +11,7 @@ class JumahWidget extends WP_Widget
     }
 
     public function form($instance) {
-        $default = ['title' => 'Jum\'ah Times'];
+        $default = array('title' => 'Jum\'ah Times');
         $instance = wp_parse_args( (array) $instance, $default );
         $title = $instance['title'];
         ?>
