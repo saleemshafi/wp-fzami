@@ -13,10 +13,12 @@ class PrayerTimeWidget extends WP_Widget
 
     public function form($instance) {
         $default = array('title' => 'Prayer Times',
-                    'show_iqama' => TRUE);
+            'show_iqama' => TRUE,
+            'show_date' => TRUE,
+            'show_hijri_date' => TRUE,
+        );
         $instance = wp_parse_args( (array) $instance, $default );
-        $title = $instance['title'];
-        $show_iqama = $instance['show_iqama'];
+        extract($instance);
         ?>
         <p>
             <label for="<?php echo $this->get_field_id( 'title' );?>">Title:</label>
@@ -32,6 +34,29 @@ class PrayerTimeWidget extends WP_Widget
                    name="<?php echo $this->get_field_name( 'show_iqama' );?>"
                    type="checkbox" value="true" <?php echo $show_iqama ? 'checked="checked"' : "" ?>"/>
         </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'show_date' );?>">Show Today's Date:</label>
+            <input class="widefat"
+                   id="<?php echo $this->get_field_id( 'show_date' );?>"
+                   name="<?php echo $this->get_field_name( 'show_date' );?>"
+                   type="checkbox" value="true" <?php echo $show_date ? 'checked="checked"' : "" ?>"/>
+        </p>
+        <?php
+        if (function_exists('en_hijri_date')) {
+        ?>
+            <p>
+                <label for="<?php echo $this->get_field_id( 'show_hijri_date' );?>">Show Hijri Date:</label>
+                <input class="widefat"
+                       id="<?php echo $this->get_field_id( 'show_hijri_date' );?>"
+                       name="<?php echo $this->get_field_name( 'show_hijri_date' );?>"
+                       type="checkbox" value="true" <?php echo $show_hijri_date ? 'checked="checked"' : "" ?>"/>
+            </p>
+        <?php } else { ?>
+            <p>If you would like to be able to display Hijri dates, please install <a href="http://wordpress.org/plugins/hijri-calendar/">the Hijri Calendar plugin</a>.
+            </p>
+        <?php
+        }
+        ?>
     <?php
     }
 
@@ -39,6 +64,8 @@ class PrayerTimeWidget extends WP_Widget
         $values = array();
         $values["title"] = strip_tags($newInstance["title"]);
         $values["show_iqama"] = $newInstance["show_iqama"] == "true";
+        $values["show_date"] = $newInstance["show_date"] == "true";
+        $values["show_hijri_date"] = $newInstance["show_hijri_date"] == "true";
         return $values;
     }
 
@@ -51,6 +78,14 @@ class PrayerTimeWidget extends WP_Widget
         echo $before_widget;
         echo $before_title . $title . $after_title;
 
+        if ($show_date) {
+            echo '<div class="pt_date">'.get_the_date().'</div>';
+        }
+        if ($show_hijri_date && function_exists('en_hijri_date')) {
+            echo '<div class="pt_hijri_date">';
+            echo en_hijri_date();
+            echo '</div>';
+        }
         $pt = $this->getPrayerTimes();
         $it = null;
         if ($show_iqama) {

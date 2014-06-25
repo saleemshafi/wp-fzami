@@ -1,1 +1,3 @@
 table.jumah, table.prayertime { width: 100%; }
+.pt_date, .pt_hijri_date { display: inline-block; }
+.pt_hijri_date { float: right; }
