@@ -181,8 +181,8 @@ function fzami_jumah_third_data_field() {
 
 function fzami_jumah_data_field($number) {
     $options = get_option('fzami_options');
-    echo "<label for=\"fzami_jumah_{$number}_time_input\">Time:</label><input id='fzami_jumah_{$number}_time_input' name='fzami_options[jumah_{$number}_time]' type='text' value='" . $options["jumah_{$number}_time"] . "' />";
-    echo "<label for=\"fzami_jumah_{$number}_khateeb_input\">Khateeb:</label><input id='fzami_jumah_{$number}_khateeb_input' name='fzami_options[jumah_{$number}_khateeb]' type='text' value='" . $options["jumah_{$number}_khateeb"] . "' />";
+    echo "<input id='fzami_jumah_{$number}_time_input' name='fzami_options[jumah_{$number}_time]' type='text' value='" . $options["jumah_{$number}_time"] . "' placeholder='Time' size='6' />";
+    echo "<input id='fzami_jumah_{$number}_khateeb_input' name='fzami_options[jumah_{$number}_khateeb]' type='text' value='" . $options["jumah_{$number}_khateeb"] . "' placeholder='Khateeb' />";
 }
 
 function fzami_validate_settings($input) {
