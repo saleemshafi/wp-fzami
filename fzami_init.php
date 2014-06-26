@@ -28,6 +28,7 @@ License: GPL2
 include("prayertime_widget.php");
 include("jumah_widget.php");
 include("settings.php");
+include('iqama_times.php');
 
 register_activation_hook( __FILE__, 'fzami_setup_options' );
 add_action( 'wp_enqueue_scripts', 'fzami_styles' );
@@ -45,6 +46,22 @@ function fzami_setup_options() {
             'time_format' => '2',
         );
         add_option('fzami_options', $options);
+    }
+    $iqama_times = get_option('fzami_iqama_times');
+    if ($iqama_times === FALSE) {
+        $iqama_dates = array(
+            '2000-01-01' => array(
+                'fajr' => '06:00',
+                'zuhr' => '14:00',
+                'asr' => '18:00',
+                'maghrib' => '20:30',
+                'isha' => '22:00',
+            )
+        );
+        add_option('fzami_iqama_times', array(
+            'maghrib_offset' => 5,
+            'dates' => $iqama_dates,
+        ));
     }
 }
 
