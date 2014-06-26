@@ -110,7 +110,7 @@ function fzami_validate_iqama_times($input) {
         $iqama_dates[$input['date_'.$iqamaNum]] = $iqamas;
     }
     return array(
-        'maghrib_offset' => $input['maghrib_offset'],
+        'maghrib_offset' => (int)$input['maghrib_offset'],
         'dates' => $iqama_dates,
     );
 }

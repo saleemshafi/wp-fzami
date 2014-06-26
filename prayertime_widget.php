@@ -89,7 +89,7 @@ class PrayerTimeWidget extends WP_Widget
         $pt = $this->getPrayerTimes();
         $it = null;
         if ($show_iqama) {
-            $it = $this->getIqamaTimes();
+            $it = $this->getIqamaTimes($pt);
         }
         echo $this->getMarkup($pt, $it);
 
@@ -119,7 +119,7 @@ class PrayerTimeWidget extends WP_Widget
         );
     }
 
-    protected function getIqamaTimes() {
+    protected function getIqamaTimes($prayer_times) {
         $iqama_times = get_option('fzami_iqama_times');
         $date_times = isset($iqama_times['dates']) ? $iqama_times['dates'] : array();
         $today = date('Y-m-d');
@@ -133,6 +133,9 @@ class PrayerTimeWidget extends WP_Widget
         }
         $times = $bestDate != null ? $date_times[$bestDate] : null;
         $realTimes = array_map('fzami_any_time', $times);
+        if (ctype_digit($iqama_times['maghrib_offset'])) {
+            $realTimes['maghrib'] = date('H:i', strtotime($prayer_times['maghrib']) + ($iqama_times['maghrib_offset'] * 60));
+        }
 
         return array(
             "fajr" => $realTimes ? $realTimes['fajr'] : null,
