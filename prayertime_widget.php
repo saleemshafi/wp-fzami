@@ -120,14 +120,26 @@ class PrayerTimeWidget extends WP_Widget
     }
 
     protected function getIqamaTimes() {
-        $options = get_option('fzami_options');
+        $iqama_times = get_option('fzami_iqama_times');
+        $date_times = isset($iqama_times['dates']) ? $iqama_times['dates'] : array();
+        $today = date('Y-m-d');
+        $bestDate = null;
+        $dates = array_keys($date_times);
+        sort($dates);
+        foreach($dates as $date) {
+            if ($date < $today) {
+                $bestDate = $date;
+            }
+        }
+        $times = $bestDate != null ? $date_times[$bestDate] : null;
+        $realTimes = array_map('fzami_any_time', $times);
 
         return array(
-            "fajr" => $options['iqama_fajr'],
-            "zuhr" => $options['iqama_zuhr'],
-            "asr"=> $options['iqama_asr'],
-            "maghrib"=> $options['iqama_maghrib'],
-            "isha" => $options['iqama_isha'],
+            "fajr" => $realTimes ? $realTimes['fajr'] : null,
+            "zuhr" => $realTimes ? $realTimes['zuhr'] : null,
+            "asr"=> $realTimes ? $realTimes['asr'] : null,
+            "maghrib"=> $realTimes ? $realTimes['maghrib'] : null,
+            "isha" => $realTimes ? $realTimes['isha'] : null,
         );
     }
 

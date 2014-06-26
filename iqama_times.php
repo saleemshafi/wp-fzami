@@ -48,11 +48,11 @@ function fzami_display_iqama_times() {
                 <tr id="iqama_<?=$next_num ?>">
                     <td><input name="iqama[]" value="<?=$next_num ?>" type="hidden"/>
                         <input name="fzami_iqama_times[date_<?=$next_num ?>]" size="10" value="<?=$date?>"/></td>
-                    <td><input name="fzami_iqama_times[fajr_<?=$next_num ?>]" size="6"  value="<?=$iqama_time['fajr']?>"/></td>
-                    <td><input name="fzami_iqama_times[zuhr_<?=$next_num ?>]" size="6"  value="<?=$iqama_time['zuhr']?>"/></td>
-                    <td><input name="fzami_iqama_times[asr_<?=$next_num ?>]" size="6"  value="<?=$iqama_time['asr']?>"/></td>
-                    <td><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"  value="<?=$iqama_time['maghrib']?>"/></td>
-                    <td><input name="fzami_iqama_times[isha_<?=$next_num ?>]" size="6"  value="<?=$iqama_time['isha']?>"/></td>
+                    <td><input name="fzami_iqama_times[fajr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['fajr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['fajr'])?>"/></td>
+                    <td><input name="fzami_iqama_times[zuhr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['zuhr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['zuhr'])?>"/></td>
+                    <td><input name="fzami_iqama_times[asr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['asr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['asr'])?>"/></td>
+                    <td><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['maghrib'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['maghrib'])?>"/></td>
+                    <td><input name="fzami_iqama_times[isha_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['isha'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['isha'])?>"/></td>
                 </tr>
                 <?php
                         $next_num++;
@@ -89,20 +89,53 @@ function fzami_iqama_maghrib_field() {
 
 function fzami_validate_iqama_times($input) {
     $iqama_dates = array();
+    $previous_iqama = array(
+        'fajr' => '',
+        'zuhr' => '',
+        'asr' => '',
+        'maghrib' => '',
+        'isha' => '',
+    );
     foreach($_POST['iqama'] as $iqamaNum) {
         $date = $input['date_'.$iqamaNum];
         if (strlen($date) > 0) {
-            $iqama_dates[$input['date_'.$iqamaNum]] = array(
-                'fajr' => $input['fajr_'.$iqamaNum],
-                'zuhr' => $input['zuhr_'.$iqamaNum],
-                'asr' => $input['asr_'.$iqamaNum],
-                'maghrib' => $input['maghrib_'.$iqamaNum],
-                'isha' => $input['isha_'.$iqamaNum],
-            );
+            $iqamas = array();
+            foreach($previous_iqama as $prayer => $iqama) {
+                if ($input[$prayer.'_'.$iqamaNum] != '') {
+                    $previous_iqama[$prayer] = $iqamas[$prayer] = $input[$prayer.'_'.$iqamaNum];
+                } else {
+                    $iqamas[$prayer] = '?'.$previous_iqama[$prayer];
+                }
+            }
+            $iqama_dates[$input['date_'.$iqamaNum]] = $iqamas;
         }
     }
     return array(
         'maghrib_offset' => $input['maghrib_offset'],
         'dates' => $iqama_dates,
     );
+}
+
+function fzami_only_explicit_time($time) {
+    if (!$time || $time[0] == '?') {
+        return '';
+    } else {
+        return $time;
+    }
+}
+
+function fzami_only_implicit_time($time) {
+    if (!$time || $time[0] != '?') {
+        return '';
+    } else {
+        return substr($time, 1);
+    }
+}
+
+function fzami_any_time($time) {
+    if ($time && $time[0] == '?') {
+        return substr($time, 1);
+    } else {
+        return $time;
+    }
 }
