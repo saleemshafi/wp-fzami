@@ -96,24 +96,39 @@ function fzami_validate_iqama_times($input) {
         'maghrib' => '',
         'isha' => '',
     );
-    foreach($_POST['iqama'] as $iqamaNum) {
-        $date = $input['date_'.$iqamaNum];
-        if (strlen($date) > 0) {
-            $iqamas = array();
-            foreach($previous_iqama as $prayer => $iqama) {
-                if ($input[$prayer.'_'.$iqamaNum] != '') {
-                    $previous_iqama[$prayer] = $iqamas[$prayer] = $input[$prayer.'_'.$iqamaNum];
-                } else {
-                    $iqamas[$prayer] = '?'.$previous_iqama[$prayer];
-                }
+    foreach(fzami_sorted_iqama_numbers($_POST['iqama'], $input) as $iqamaNum) {
+        $iqamas = array();
+        foreach($previous_iqama as $prayer => $iqama) {
+            if ($input[$prayer.'_'.$iqamaNum] != '' &&
+                ($time = date('H:i', strtotime($input[$prayer.'_'.$iqamaNum]))) != '00:00')
+            {
+                $previous_iqama[$prayer] = $iqamas[$prayer] = $time;
+            } else {
+                $iqamas[$prayer] = '?'.$previous_iqama[$prayer];
             }
-            $iqama_dates[$input['date_'.$iqamaNum]] = $iqamas;
         }
+        $iqama_dates[$input['date_'.$iqamaNum]] = $iqamas;
     }
     return array(
         'maghrib_offset' => $input['maghrib_offset'],
         'dates' => $iqama_dates,
     );
+}
+
+function fzami_sorted_iqama_numbers($iqama_nums, &$input) {
+    $dateNumMap = array();
+    $dates = array();
+    foreach($iqama_nums as $num) {
+        $date = $input['date_'.$num];
+        if (($time = strtotime($date)) != 0) {
+            $date = date('Y-m-d', $time);
+            $input['date_'.$num] = $date;
+            $dateNumMap[$date] = $num;
+            array_push($dates, $date);
+        }
+    }
+    sort($dates);
+    return array_map(function($date) use ($dateNumMap) { return $dateNumMap[$date]; }, $dates);
 }
 
 function fzami_only_explicit_time($time) {
