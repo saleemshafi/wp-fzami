@@ -11,9 +11,11 @@ class JumahWidget extends WP_Widget
     }
 
     public function form($instance) {
-        $default = array('title' => 'Jum\'ah Times');
+        $default = array('title' => 'Jum\'ah Times',
+            'time_format' => null,
+        );
         $instance = wp_parse_args( (array) $instance, $default );
-        $title = $instance['title'];
+        extract($instance);
         ?>
         <p>
             <label for="<?php echo $this->get_field_id( 'title' );?>">Title:</label>
@@ -22,16 +24,25 @@ class JumahWidget extends WP_Widget
                    name="<?php echo $this->get_field_name( 'title' );?>"
                    type="text" value="<?php echo esc_attr( $title ); ?>" />
         </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'time_format' );?>">Time Format:</label>
+            <input class="widefat"
+                   id="<?php echo $this->get_field_id( 'time_format' );?>"
+                   name="<?php echo $this->get_field_name( 'time_format' );?>"
+                   type="text" value="<?php echo $time_format ? esc_attr($time_format) : ""; ?>"/>
+        </p>
     <?php
     }
 
     public function update($newInstance, $oldInstance) {
         $values = array();
         $values["title"] = strip_tags($newInstance["title"]);
+        $values["time_format"] = $newInstance["time_format"] != "" ? $newInstance["time_format"] : null;
         return $values;
     }
 
     public function widget($args, $instance) {
+        $time_format = null;
         extract($args);
         extract($instance);
 
@@ -42,16 +53,16 @@ class JumahWidget extends WP_Widget
             echo $before_title . $title . $after_title;
         }
 
-        echo $this->getJumahMarkup();
+        echo $this->getJumahMarkup($time_format);
 
         echo $after_widget;
     }
 
-    protected function getJumahMarkup() {
+    protected function getJumahMarkup($format) {
         $markup = "";
         $options = get_option('fzami_options');
         $markup .= "<table id=\"jumah-table\" class=\"jumah\">";
-        $formatter = fzami_get_time_formatter();
+        $formatter = fzami_get_time_formatter($format);
         if (isset($options["jumah_first_time"])) {
             $time = $formatter($options['jumah_first_time']);
             $markup .= "<tr><th class=\"time\">$time</th><td class=\"khateeb\">{$options['jumah_first_khateeb']}</td></tr>";
