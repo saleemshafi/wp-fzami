@@ -4,3 +4,4 @@ table.jumah, table.prayertime { width: 100%; }
 .prayer_table td.prayer { color: #000; }
 .prayer_table .iqama { color: #AAA; }
 .prayer_table { width: 100%; }
+.prayer_table tr:nth-child(2n) td { background-color: #F8F7F4; }
