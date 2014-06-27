@@ -16,6 +16,7 @@ class PrayerTimeWidget extends WP_Widget
             'show_iqama' => TRUE,
             'show_date' => TRUE,
             'show_hijri_date' => TRUE,
+            'time_format' => null,
         );
         $instance = wp_parse_args( (array) $instance, $default );
         extract($instance);
@@ -26,6 +27,13 @@ class PrayerTimeWidget extends WP_Widget
                    id="<?php echo $this->get_field_id( 'title' );?>"
                    name="<?php echo $this->get_field_name( 'title' );?>"
                    type="text" value="<?php echo esc_attr( $title ); ?>" />
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'time_format' );?>">Time Format:</label>
+            <input class="widefat"
+                   id="<?php echo $this->get_field_id( 'time_format' );?>"
+                   name="<?php echo $this->get_field_name( 'time_format' );?>"
+                   type="text" value="<?php echo $time_format ? esc_attr($time_format) : ""; ?>"/>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id( 'show_iqama' );?>">Show Iqama Times:</label>
@@ -66,10 +74,12 @@ class PrayerTimeWidget extends WP_Widget
         $values["show_iqama"] = $newInstance["show_iqama"] == "true";
         $values["show_date"] = $newInstance["show_date"] == "true";
         $values["show_hijri_date"] = $newInstance["show_hijri_date"] == "true";
+        $values["time_format"] = $newInstance["time_format"] != "" ? $newInstance["time_format"] : null;
         return $values;
     }
 
     public function widget($args, $instance) {
+        $time_format = null;
         extract($args);
         extract($instance);
 
@@ -88,7 +98,7 @@ class PrayerTimeWidget extends WP_Widget
         }
         $pto = new Fzami_PrayerTimes();
 
-        $pt = $pto->getAzanAndIqamaTimes(time());
+        $pt = $pto->getAzanAndIqamaTimes(time(), $time_format);
         echo $this->getMarkup($pt['azan'], $show_iqama ? $pt['iqama'] : null);
 
         echo $after_widget;
