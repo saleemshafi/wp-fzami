@@ -51,12 +51,6 @@ function fzami_init_register_settings() {
         'fzami_display_section', // Function to call
         __FILE__ // Page
     );
-    add_settings_field('display_timezone',// Unique ID
-        'Timezone', // Name for this field
-        'fzami_display_timezone_field', //Function to call
-        __FILE__, // Page
-        'display_settings' // Section to belong to
-    );
     add_settings_field('display_time_format',// Unique ID
         'Time Format', // Name for this field
         'fzami_display_time_format_field', //Function to call
@@ -132,11 +126,6 @@ function fzami_location_longitude_field() {
     echo "<input id='fzami_longitude_input' name='fzami_options[longitude]' type='text' value='" . $options['longitude'] . "' />";
 }
 
-function fzami_display_timezone_field() {
-    $options = get_option('fzami_options');
-    echo "<input id='fzami_timezone_input' name='fzami_options[timezone]' type='text' value='" . $options['timezone'] . "' />";
-}
-
 function fzami_display_time_format_field() {
     $options = get_option('fzami_options');
     echo "<select id='fzami_time_format_input' name='fzami_options[time_format]'>".
@@ -186,8 +175,5 @@ function fzami_jumah_data_field($number) {
 }
 
 function fzami_validate_settings($input) {
-    if ($input['timezone'] < -12 || $input['timezone'] > 12) {
-        $input['timezone'] = "-5";
-    }
     return $input;
 }

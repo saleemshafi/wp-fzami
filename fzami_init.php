@@ -42,7 +42,6 @@ function fzami_setup_options() {
             'calc_method' => '2',
             'latitude' => '30.3561811',
             'longitude' => '-97.74292609999999',
-            'timezone' => '-5',
             'asr_format' => '1',
             'time_format' => '2',
         );
@@ -100,7 +99,6 @@ class Fzami_PrayerTimes {
     protected $prayTime;
     protected $longitude;
     protected $latitude;
-    protected $timezone;
     protected $timeFormat;
 
     public function __construct() {
@@ -113,7 +111,6 @@ class Fzami_PrayerTimes {
 
         $this->latitude = $options['latitude'];
         $this->longitude = $options['longitude'];
-        $this->timezone = $options['timezone'];
     }
 
     public function getAzanAndIqamaTimes($d, $format = null) {
@@ -122,8 +119,18 @@ class Fzami_PrayerTimes {
         return array("azan" => $pt, "iqama" => $it);
     }
 
+    protected function getTimeZoneOffset($date) {
+        $tzs = get_option('timezone_string');
+        if (!$tzs || strlen($tzs) < 1) {
+            $tzs = "UTC+0";
+        }
+        $dtz = new DateTimeZone($tzs);
+        $tz = $dtz->getOffset(new DateTime(date('Y-m-d', $date)));
+        return $tz / (60 * 60);
+    }
+
     protected function getPrayerTimes($d, $format) {
-        $times = $this->prayTime->getPrayerTimes($d, $this->latitude, $this->longitude, $this->timezone);
+        $times = $this->prayTime->getPrayerTimes($d, $this->latitude, $this->longitude, $this->getTimeZoneOffset($d));
         $formatter = fzami_get_time_formatter($format);
 
         return array(
