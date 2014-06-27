@@ -78,17 +78,19 @@ function fzami_get_time_formatter($format = null) {
     }
     if ($format == '1') {
         return function($time) {
-            list($hours, $minutes) = explode(':', $time);
-            return ((($hours+12-1)%12)+1).":".($minutes)." ".($hours >= 12 ? "pm" : "am");
+            return date('g:i a', strtotime($time));
         };
     } else if ($format == '2') {
         return function($time) {
-            list($hours, $minutes) = explode(':', $time);
-            return ((($hours+12-1)%12)+1).":".($minutes);
+            return date('g:i', strtotime($time));
+        };
+    } else if ($format == '0') {
+        return function($time) {
+            return date('H:i', strtotime($time));
         };
     } else {
-        return function($time) {
-            return $time;
+        return function($time) use ($format) {
+            return date($format, strtotime($time));
         };
     }
 }
@@ -105,37 +107,36 @@ class Fzami_PrayerTimes {
         $options = get_option('fzami_options');
         $method = $options['calc_method'];
         $asrMethod = $options['asr_method'];
-        $this->timeFormat = $options['time_format'];
         $this->prayTime = new PrayTime($method);
         $this->prayTime->setAsrMethod($asrMethod);
-        $this->prayTime->setTimeFormat($this->timeFormat);
+        $this->prayTime->setTimeFormat('0');
 
         $this->latitude = $options['latitude'];
         $this->longitude = $options['longitude'];
         $this->timezone = $options['timezone'];
     }
 
-    public function getAzanAndIqamaTimes($d, $format) {
+    public function getAzanAndIqamaTimes($d, $format = null) {
         $pt = $this->getPrayerTimes($d, $format);
         $it = $this->getIqamaTimes($pt['maghrib'], $d, $format);
         return array("azan" => $pt, "iqama" => $it);
     }
 
-    protected function getPrayerTimes($d, $format = null) {
-        $this->prayTime->setTimeFormat($format ? $format : $this->timeFormat);
+    protected function getPrayerTimes($d, $format) {
         $times = $this->prayTime->getPrayerTimes($d, $this->latitude, $this->longitude, $this->timezone);
+        $formatter = fzami_get_time_formatter($format);
 
         return array(
-            "fajr" => $times[0],
-            "shuruq" => $times[1],
-            "zuhr" => $times[2],
-            "asr" => $times[3],
-            "maghrib" => $times[5],
-            "isha" => $times[6],
+            "fajr" => $formatter($times[0]),
+            "shuruq" => $formatter($times[1]),
+            "zuhr" => $formatter($times[2]),
+            "asr" => $formatter($times[3]),
+            "maghrib" => $formatter($times[5]),
+            "isha" => $formatter($times[6]),
         );
     }
 
-    protected function getIqamaTimes($maghrib_time, $d, $format = null) {
+    protected function getIqamaTimes($maghrib_time, $d, $format) {
         $iqama_times = get_option('fzami_iqama_times');
         $date_times = isset($iqama_times['dates']) ? $iqama_times['dates'] : array();
         $today = date('Y-m-d', $d);
