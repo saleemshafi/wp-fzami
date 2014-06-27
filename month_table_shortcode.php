@@ -7,7 +7,8 @@ function fzami_month_table($atts = array()) {
 
     $month = date("n");
     $year = date("Y");time();
-    $format = '2'; // 12 hour, no am/pm
+    $time_format = '2'; // 12 hour, no am/pm
+    $date_format = 'Y-m-d';
     if ($atts) {
         extract($atts);
     }
@@ -30,10 +31,10 @@ function fzami_month_table($atts = array()) {
     $pto = new Fzami_PrayerTimes();
     for($day = 1; $day <= $last_day; $day++) {
         $date = mktime(0,0,0, $month, $day, $year);
-        $times = $pto->getAzanAndIqamaTimes($date, $format);
+        $times = $pto->getAzanAndIqamaTimes($date, $time_format);
 ?>
             <tr>
-                <td class="date"><?= date('Y-m-d', $date) ?></td>
+                <td class="date"><?= date($date_format, $date) ?></td>
                 <td class="prayer">
                     <span class="azan"><?= $times['azan']['fajr'] ?></span>
                     <span class="iqama"><?= $times['iqama']['fajr'] ?></span>
