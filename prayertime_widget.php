@@ -16,6 +16,7 @@ class PrayerTimeWidget extends WP_Widget
             'show_date' => TRUE,
             'show_hijri_date' => TRUE,
             'time_format' => null,
+            'footer_text' => '',
         );
         $instance = wp_parse_args( (array) $instance, $default );
         extract($instance);
@@ -64,6 +65,12 @@ class PrayerTimeWidget extends WP_Widget
         <?php
         }
         ?>
+        <p>
+            <label for="<?php echo $this->get_field_id( 'footer_text' );?>">Extra content:</label>
+            <textarea class="widefat"
+                   id="<?php echo $this->get_field_id( 'footer_text' );?>"
+                   name="<?php echo $this->get_field_name( 'footer_text' );?>"><?php echo $footer_text ? htmlentities($footer_text) : ""; ?></textarea>
+        </p>
     <?php
     }
 
@@ -74,6 +81,7 @@ class PrayerTimeWidget extends WP_Widget
         $values["show_date"] = $newInstance["show_date"] == "true";
         $values["show_hijri_date"] = $newInstance["show_hijri_date"] == "true";
         $values["time_format"] = $newInstance["time_format"] != "" ? $newInstance["time_format"] : null;
+        $values["footer_text"] = $newInstance["footer_text"];
         return $values;
     }
 
@@ -100,6 +108,8 @@ class PrayerTimeWidget extends WP_Widget
         $now = current_time( 'timestamp' );
         $pt = $pto->getAzanAndIqamaTimes($now, $time_format);
         echo $this->getMarkup($pt['azan'], $show_iqama ? $pt['iqama'] : null);
+
+        echo do_shortcode($footer_text);
 
         echo $after_widget;
     }
