@@ -43,7 +43,6 @@ function fzami_setup_options() {
             'latitude' => '30.3561811',
             'longitude' => '-97.74292609999999',
             'asr_format' => '1',
-            'time_format' => '2',
         );
         add_option('fzami_options', $options);
     }
@@ -72,26 +71,11 @@ function fzami_styles() {
 
 function fzami_get_time_formatter($format = null) {
     if ($format == null) {
-        $options = get_option('fzami_options');
-        $format = $options['time_format'];
+        $format = get_option('time_format');
     }
-    if ($format == '1') {
-        return function($time) {
-            return date('g:i a', strtotime($time));
-        };
-    } else if ($format == '2') {
-        return function($time) {
-            return date('g:i', strtotime($time));
-        };
-    } else if ($format == '0') {
-        return function($time) {
-            return date('H:i', strtotime($time));
-        };
-    } else {
-        return function($time) use ($format) {
-            return date($format, strtotime($time));
-        };
-    }
+    return function($time) use ($format) {
+        return date($format, strtotime($time));
+    };
 }
 
 

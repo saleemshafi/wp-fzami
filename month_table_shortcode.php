@@ -7,7 +7,7 @@ function fzami_month_table($atts = array()) {
 
     $month = date("n");
     $year = date("Y");time();
-    $time_format = '2'; // 12 hour, no am/pm
+    $time_format = null;
     $date_format = 'Y-m-d';
     if ($atts) {
         extract($atts);

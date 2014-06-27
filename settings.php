@@ -45,18 +45,6 @@ function fzami_init_register_settings() {
         __FILE__, // Page
         'calculation_settings' // Section to belong to
     );
-//------------------------ Display Settings -------------------------//
-    add_settings_section('display_settings', // Unique ID
-        'Display Settings', // Name for this section
-        'fzami_display_section', // Function to call
-        __FILE__ // Page
-    );
-    add_settings_field('display_time_format',// Unique ID
-        'Time Format', // Name for this field
-        'fzami_display_time_format_field', //Function to call
-        __FILE__, // Page
-        'display_settings' // Section to belong to
-    );
 //------------------------ Jumah Settings -------------------------//
     add_settings_section('jumah_settings', // Unique ID
         'Friday Prayer Settings', // Name for this section
@@ -124,15 +112,6 @@ function fzami_location_latitude_field() {
 function fzami_location_longitude_field() {
     $options = get_option('fzami_options');
     echo "<input id='fzami_longitude_input' name='fzami_options[longitude]' type='text' value='" . $options['longitude'] . "' />";
-}
-
-function fzami_display_time_format_field() {
-    $options = get_option('fzami_options');
-    echo "<select id='fzami_time_format_input' name='fzami_options[time_format]'>".
-        "<option value=\"0\" ".($options["time_format"] == "0" ? 'selected="true"': '').">24 hour</option>".
-        "<option value=\"1\" ".($options["time_format"] == "1" ? 'selected="true"': '').">12 hour (am/pm)</option>".
-        "<option value=\"2\" ".($options["time_format"] == "2" ? 'selected="true"': '').">12 hour</option>".
-        "</select>";
 }
 
 function fzami_calculate_method_field() {
