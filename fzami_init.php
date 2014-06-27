@@ -29,6 +29,7 @@ include("prayertime_widget.php");
 include("jumah_widget.php");
 include("settings.php");
 include('iqama_times.php');
+include('month_table_shortcode.php');
 
 register_activation_hook( __FILE__, 'fzami_setup_options' );
 add_action( 'wp_enqueue_scripts', 'fzami_styles' );
@@ -70,17 +71,95 @@ function fzami_styles() {
     //wp_enqueue_script( 'script-name', get_template_directory_uri() . '/js/example.js', array(), '1.0.0', true );
 }
 
-function fzami_format_time($time) {
-    $options = get_option('fzami_options');
-    $timeFormat = $options['time_format'];
-    if ($timeFormat == '1') {
-        list($hours, $minutes) = explode(':', $time);
-        return ((($hours+12-1)%12)+1).":".($minutes)." ".($hours >= 12 ? "pm" : "am");
-    } else if ($timeFormat == '2') {
-        list($hours, $minutes) = explode(':', $time);
-        return ((($hours+12-1)%12)+1).":".($minutes);
+function fzami_get_time_formatter($format = null) {
+    if ($format == null) {
+        $options = get_option('fzami_options');
+        $format = $options['time_format'];
+    }
+    if ($format == '1') {
+        return function($time) {
+            list($hours, $minutes) = explode(':', $time);
+            return ((($hours+12-1)%12)+1).":".($minutes)." ".($hours >= 12 ? "pm" : "am");
+        };
+    } else if ($format == '2') {
+        return function($time) {
+            list($hours, $minutes) = explode(':', $time);
+            return ((($hours+12-1)%12)+1).":".($minutes);
+        };
     } else {
-        return $time;
+        return function($time) {
+            return $time;
+        };
     }
 }
 
+
+class Fzami_PrayerTimes {
+    protected $prayTime;
+    protected $longitude;
+    protected $latitude;
+    protected $timezone;
+    protected $timeFormat;
+
+    public function __construct() {
+        $options = get_option('fzami_options');
+        $method = $options['calc_method'];
+        $asrMethod = $options['asr_method'];
+        $this->timeFormat = $options['time_format'];
+        $this->prayTime = new PrayTime($method);
+        $this->prayTime->setAsrMethod($asrMethod);
+        $this->prayTime->setTimeFormat($this->timeFormat);
+
+        $this->latitude = $options['latitude'];
+        $this->longitude = $options['longitude'];
+        $this->timezone = $options['timezone'];
+    }
+
+    public function getAzanAndIqamaTimes($d, $format) {
+        $pt = $this->getPrayerTimes($d, $format);
+        $it = $this->getIqamaTimes($pt['maghrib'], $d, $format);
+        return array("azan" => $pt, "iqama" => $it);
+    }
+
+    protected function getPrayerTimes($d, $format = null) {
+        $this->prayTime->setTimeFormat($format ? $format : $this->timeFormat);
+        $times = $this->prayTime->getPrayerTimes($d, $this->latitude, $this->longitude, $this->timezone);
+
+        return array(
+            "fajr" => $times[0],
+            "shuruq" => $times[1],
+            "zuhr" => $times[2],
+            "asr" => $times[3],
+            "maghrib" => $times[5],
+            "isha" => $times[6],
+        );
+    }
+
+    protected function getIqamaTimes($maghrib_time, $d, $format = null) {
+        $iqama_times = get_option('fzami_iqama_times');
+        $date_times = isset($iqama_times['dates']) ? $iqama_times['dates'] : array();
+        $today = date('Y-m-d', $d);
+        $bestDate = null;
+        $dates = array_keys($date_times);
+        sort($dates);
+        foreach($dates as $date) {
+            if ($date < $today) {
+                $bestDate = $date;
+            }
+        }
+        $times = $bestDate != null ? $date_times[$bestDate] : null;
+        $realTimes = array_map('fzami_any_time', $times);
+        if (ctype_digit($iqama_times['maghrib_offset'])) {
+            $realTimes['maghrib'] = date('H:i', strtotime($maghrib_time) + ($iqama_times['maghrib_offset'] * 60));
+        }
+
+        $formatter = fzami_get_time_formatter($format);
+        return array(
+            "fajr" => $realTimes ? $formatter($realTimes['fajr']) : null,
+            "zuhr" => $realTimes ? $formatter($realTimes['zuhr']) : null,
+            "asr"=> $realTimes ? $formatter($realTimes['asr']) : null,
+            "maghrib"=> $realTimes ? $formatter($realTimes['maghrib']) : null,
+            "isha" => $realTimes ? $formatter($realTimes['isha']) : null,
+        );
+    }
+}

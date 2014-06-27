@@ -51,16 +51,17 @@ class JumahWidget extends WP_Widget
         $markup = "";
         $options = get_option('fzami_options');
         $markup .= "<table id=\"jumah-table\" class=\"jumah\">";
+        $formatter = fzami_get_time_formatter();
         if (isset($options["jumah_first_time"])) {
-            $time = fzami_format_time($options['jumah_first_time']);
+            $time = $formatter($options['jumah_first_time']);
             $markup .= "<tr><th class=\"time\">$time</th><td class=\"khateeb\">{$options['jumah_first_khateeb']}</td></tr>";
         }
         if (isset($options["jumah_second_time"])) {
-            $time = fzami_format_time($options['jumah_second_time']);
+            $time = $formatter($options['jumah_second_time']);
             $markup .= "<tr><th class=\"time\">$time</th><td class=\"khateeb\">{$options['jumah_second_khateeb']}</td></tr>";
         }
         if (isset($options["jumah_third_time"])) {
-            $time = fzami_format_time($options['jumah_third_time']);
+            $time = $formatter($options['jumah_third_time']);
             $markup .= "<tr><th class=\"time\">$time</th><td class=\"khateeb\">{$options['jumah_third_khateeb']}</td></tr>";
         }
         $markup .= "</table>";

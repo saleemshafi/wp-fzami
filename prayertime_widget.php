@@ -86,78 +86,23 @@ class PrayerTimeWidget extends WP_Widget
             echo en_hijri_date();
             echo '</div>';
         }
-        $pt = $this->getPrayerTimes();
-        $it = null;
-        if ($show_iqama) {
-            $it = $this->getIqamaTimes($pt);
-        }
-        echo $this->getMarkup($pt, $it);
+        $pto = new Fzami_PrayerTimes();
+
+        $pt = $pto->getAzanAndIqamaTimes(time());
+        echo $this->getMarkup($pt['azan'], $show_iqama ? $pt['iqama'] : null);
 
         echo $after_widget;
     }
 
-    protected function getPrayerTimes() {
-        $options = get_option('fzami_options');
-        $latitude = $options['latitude'];
-        $longitude = $options['longitude'];
-        $method = $options['calc_method'];
-        $asrMethod = $options['asr_method'];
-        $timeZone = $options['timezone'];
-        $timeFormat = $options['time_format'];
-
-        $prayTime = new PrayTime($method);
-        $prayTime->setAsrMethod($asrMethod);
-        $prayTime->setTimeFormat($timeFormat);
-        $times = $prayTime->getPrayerTimes(time(), $latitude, $longitude, $timeZone);
-
-        return array(
-            "fajr" => $times[0],
-            "zuhr" => $times[2],
-            "asr" => $times[3],
-            "maghrib" => $times[5],
-            "isha" => $times[6],
-        );
-    }
-
-    protected function getIqamaTimes($prayer_times) {
-        $iqama_times = get_option('fzami_iqama_times');
-        $date_times = isset($iqama_times['dates']) ? $iqama_times['dates'] : array();
-        $today = date('Y-m-d');
-        $bestDate = null;
-        $dates = array_keys($date_times);
-        sort($dates);
-        foreach($dates as $date) {
-            if ($date < $today) {
-                $bestDate = $date;
-            }
-        }
-        $times = $bestDate != null ? $date_times[$bestDate] : null;
-        $realTimes = array_map('fzami_any_time', $times);
-        if (ctype_digit($iqama_times['maghrib_offset'])) {
-            $realTimes['maghrib'] = date('H:i', strtotime($prayer_times['maghrib']) + ($iqama_times['maghrib_offset'] * 60));
-        }
-
-        return array(
-            "fajr" => $realTimes ? $realTimes['fajr'] : null,
-            "zuhr" => $realTimes ? $realTimes['zuhr'] : null,
-            "asr"=> $realTimes ? $realTimes['asr'] : null,
-            "maghrib"=> $realTimes ? $realTimes['maghrib'] : null,
-            "isha" => $realTimes ? $realTimes['isha'] : null,
-        );
-    }
-
     protected function getMarkup($pt, $it) {
         $showIqama = !is_null($it);
-        if ($showIqama) {
-            $iqamas = array_map(function($time) { return fzami_format_time($time); }, $it);
-        }
         return "<table class=\"prayertime\">".
             "<tr><th></th><th>Azhan</th>".($showIqama ? "<th>Iqama</th>" : "")."</tr>".
-            "<tr><th>Fajr</th><td class=\"azhan\">{$pt['fajr']}</td>".($showIqama ? "<td class=\"iqama\">{$iqamas['fajr']}</td>" : "")."</tr>".
-            "<tr><th>Zuhr</th><td class=\"azhan\">{$pt["zuhr"]}</td>".($showIqama ? "<td class=\"iqama\">{$iqamas['zuhr']}</td>" : "")."</tr>".
-            "<tr><th>Asr</th><td class=\"azhan\">{$pt["asr"]}</td>".($showIqama ? "<td class=\"iqama\">{$iqamas['asr']}</td>" : "")."</tr>".
-            "<tr><th>Maghrib</th><td class=\"azhan\">{$pt["maghrib"]}</td>".($showIqama ? "<td class=\"iqama\">{$iqamas['maghrib']}</td>" : "")."</tr>".
-            "<tr><th>Isha</th><td class=\"azhan\">{$pt["isha"]}</td>".($showIqama ? "<td class=\"iqama\">{$iqamas['isha']}</td>" : "")."</tr>".
+            "<tr><th>Fajr</th><td class=\"azhan\">{$pt['fajr']}</td>".($showIqama ? "<td class=\"iqama\">{$it['fajr']}</td>" : "")."</tr>".
+            "<tr><th>Zuhr</th><td class=\"azhan\">{$pt["zuhr"]}</td>".($showIqama ? "<td class=\"iqama\">{$it['zuhr']}</td>" : "")."</tr>".
+            "<tr><th>Asr</th><td class=\"azhan\">{$pt["asr"]}</td>".($showIqama ? "<td class=\"iqama\">{$it['asr']}</td>" : "")."</tr>".
+            "<tr><th>Maghrib</th><td class=\"azhan\">{$pt["maghrib"]}</td>".($showIqama ? "<td class=\"iqama\">{$it['maghrib']}</td>" : "")."</tr>".
+            "<tr><th>Isha</th><td class=\"azhan\">{$pt["isha"]}</td>".($showIqama ? "<td class=\"iqama\">{$it['isha']}</td>" : "")."</tr>".
             "</table>";
     }
 }
