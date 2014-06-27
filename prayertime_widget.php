@@ -3,7 +3,6 @@ include("lib/PrayTime.php");
 
 add_action("widgets_init", function () { register_widget("PrayerTimeWidget"); });
 
-
 class PrayerTimeWidget extends WP_Widget
 {
     public function __construct() {
@@ -89,7 +88,7 @@ class PrayerTimeWidget extends WP_Widget
         echo $before_title . $title . $after_title;
 
         if ($show_date) {
-            echo '<div class="pt_date">'.get_the_date().'</div>';
+            echo '<div class="pt_date">'.date(get_option('date_format'), current_time( 'timestamp' )).'</div>';
         }
         if ($show_hijri_date && function_exists('en_hijri_date')) {
             echo '<div class="pt_hijri_date">';
@@ -98,7 +97,8 @@ class PrayerTimeWidget extends WP_Widget
         }
         $pto = new Fzami_PrayerTimes();
 
-        $pt = $pto->getAzanAndIqamaTimes(time(), $time_format);
+        $now = current_time( 'timestamp' );
+        $pt = $pto->getAzanAndIqamaTimes($now, $time_format);
         echo $this->getMarkup($pt['azan'], $show_iqama ? $pt['iqama'] : null);
 
         echo $after_widget;

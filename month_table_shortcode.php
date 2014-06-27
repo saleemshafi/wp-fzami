@@ -5,8 +5,9 @@ add_shortcode('fzami_month_table', 'fzami_month_table');
 function fzami_month_table($atts = array()) {
     ob_start();
 
-    $month = date("n");
-    $year = date("Y");time();
+    $now = current_time( 'timestamp' );
+    $month = date("n", $now);
+    $year = date("Y", $now);
     $time_format = null;
     $date_format = 'Y-m-d';
     if ($atts) {
@@ -30,10 +31,10 @@ function fzami_month_table($atts = array()) {
 <?php
     $pto = new Fzami_PrayerTimes();
     for($day = 1; $day <= $last_day; $day++) {
-        $date = mktime(0,0,0, $month, $day, $year);
+        $date = mktime(0,0,1, $month, $day, $year);
         $times = $pto->getAzanAndIqamaTimes($date, $time_format);
 ?>
-            <tr>
+            <tr<?=fzami_is_today($date)?' class="today"':'' ?>>
                 <td class="date"><?= date($date_format, $date) ?></td>
                 <td class="prayer">
                     <span class="azan"><?= $times['azan']['fajr'] ?></span>
@@ -64,4 +65,8 @@ function fzami_month_table($atts = array()) {
     $output = ob_get_contents();
     ob_end_clean();
     return $output;
+}
+
+function fzami_is_today($date) {
+    return date('Y-m-d', $date) == date('Y-m-d', current_time( 'timestamp' ));
 }
