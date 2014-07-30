@@ -141,8 +141,9 @@ class Fzami_PrayerTimes {
         }
         $times = $bestDate != null ? $date_times[$bestDate] : null;
         $realTimes = array_map('fzami_any_time', $times);
-        if (ctype_digit($iqama_times['maghrib_offset'])) {
-            $realTimes['maghrib'] = date('H:i', strtotime($maghrib_time) + ($iqama_times['maghrib_offset'] * 60));
+        $magrib_offset = $iqama_times['maghrib_offset'];
+        if (is_numeric($magrib_offset) || ctype_digit($magrib_offset)) {
+            $realTimes['maghrib'] = date('H:i', strtotime($maghrib_time) + ($magrib_offset * 60));
         }
 
         $formatter = fzami_get_time_formatter($format);
