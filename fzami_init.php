@@ -135,7 +135,7 @@ class Fzami_PrayerTimes {
         $dates = array_keys($date_times);
         sort($dates);
         foreach($dates as $date) {
-            if ($date < $today) {
+            if ($date <= $today) {
                 $bestDate = $date;
             }
         }
