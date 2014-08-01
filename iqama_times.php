@@ -21,6 +21,9 @@ function fzami_init_register_iqama_times() {
         __FILE__, // Page
         'iqama_times' // Section to belong to
     );
+
+    wp_enqueue_style( 'fzami-styles', WP_PLUGIN_URL . "/wp-fzami/css/wp-fzami.css" );
+    wp_enqueue_script( 'iqama_times', WP_PLUGIN_URL . '/wp-fzami/js/iqama_times.js', array(), '1.0.0', true );
 }
 
 function fzami_display_iqama_times() {
@@ -35,7 +38,7 @@ function fzami_display_iqama_times() {
 
             <?php do_settings_sections(__FILE__); ?>
             <table>
-                <tr><th>Date</th><th>Fajr</th><th>Zuhr</th><th>Asr</th><th>Maghrib</th><th>Isha</th></tr>
+                <tr><th>Date</th><th>Fajr</th><th>Zuhr</th><th>Asr</th><th class="maghrib">Maghrib</th><th>Isha</th></tr>
 
                 <?php
                     $dates = array();
@@ -51,7 +54,7 @@ function fzami_display_iqama_times() {
                     <td><input name="fzami_iqama_times[fajr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['fajr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['fajr'])?>"/></td>
                     <td><input name="fzami_iqama_times[zuhr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['zuhr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['zuhr'])?>"/></td>
                     <td><input name="fzami_iqama_times[asr_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['asr'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['asr'])?>"/></td>
-                    <td><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['maghrib'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['maghrib'])?>"/></td>
+                    <td class="maghrib"><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['maghrib'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['maghrib'])?>"/></td>
                     <td><input name="fzami_iqama_times[isha_<?=$next_num ?>]" size="6"  value="<?=fzami_only_explicit_time($iqama_time['isha'])?>" placeholder="<?=fzami_only_implicit_time($iqama_time['isha'])?>"/></td>
                 </tr>
                 <?php
@@ -65,7 +68,7 @@ function fzami_display_iqama_times() {
                     <td><input name="fzami_iqama_times[fajr_<?=$next_num ?>]" size="6"/></td>
                     <td><input name="fzami_iqama_times[zuhr_<?=$next_num ?>]" size="6"/></td>
                     <td><input name="fzami_iqama_times[asr_<?=$next_num ?>]" size="6"/></td>
-                    <td><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"/></td>
+                    <td class="maghrib"><input name="fzami_iqama_times[maghrib_<?=$next_num ?>]" size="6"/></td>
                     <td><input name="fzami_iqama_times[isha_<?=$next_num ?>]" size="6"/></td>
                 </tr>
             </table>
@@ -83,7 +86,8 @@ function fzami_iqama_times_section() {
 
 function fzami_iqama_maghrib_field() {
     $options = get_option('fzami_iqama_times');
-    echo "<input id='fzami_iqama_maghrib_input' name='fzami_iqama_times[maghrib_offset]' type='text' value='" . $options['maghrib_offset'] . "' />";
+    echo "<input id='fzami_iqama_maghrib_input' name='fzami_iqama_times[maghrib_offset]' type='text' value='" . $options['maghrib_offset'] . "' />".
+         "<br/><sub>If this field is set, then the maghrib iqama will be X minutes after the azan.  Otherwise, maghrib iqama needs to be set explicitly.</sub>";
 }
 
 
