@@ -96,7 +96,7 @@ class PrayerTimeWidget extends WP_Widget
         echo $before_title . $title . $after_title;
 
         if ($show_date) {
-            echo '<div class="pt_date">'.date(get_option('date_format'), current_time( 'timestamp' )).'</div>';
+            echo '<div class="pt_date">'.date_i18n(get_option('date_format')).'</div>';
         }
         if ($show_hijri_date && function_exists('en_hijri_date')) {
             echo '<div class="pt_hijri_date">';
