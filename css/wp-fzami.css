@@ -7,4 +7,5 @@ table.jumah, table.prayertime { width: 100%; }
 .prayer_table tr:nth-child(2n) td { background-color: #F8F7F4; }
 .prayer_table .today td { background-color: #FBDB99 !important; }
 
+.jumah_date td { border: none; }
 .with-maghrib-offset .maghrib { display: none; }

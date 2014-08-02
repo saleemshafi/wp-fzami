@@ -61,7 +61,12 @@ class JumahWidget extends WP_Widget
     protected function getJumahMarkup($format) {
         $markup = "";
         $options = get_option('fzami_options');
+        $dateStr = $options['jumah_date'];
+        $hasDate = $dateStr && trim($dateStr) != '';
         $markup .= "<table id=\"jumah-table\" class=\"jumah\">";
+        if ($hasDate) {
+            $markup .= "<tr class=\"jumah_date\"><td></td><td>".date(get_option('date_format'), strtotime($dateStr))."</td></tr>";
+        }
         $formatter = fzami_get_time_formatter($format);
         if (isset($options["jumah_first_time"])) {
             $time = $formatter($options['jumah_first_time']);

@@ -51,6 +51,12 @@ function fzami_init_register_settings() {
         'fzami_jumah_section', // Function to call
         __FILE__ // Page
     );
+    add_settings_field('jumah_date_data',// Unique ID
+        'For Date', // Name for this field
+        'fzami_jumah_date_data_field', //Function to call
+        __FILE__, // Page
+        'jumah_settings' // Section to belong to
+    );
     add_settings_field('jumah_first_data',// Unique ID
         'First Jumah', // Name for this field
         'fzami_jumah_first_data_field', //Function to call
@@ -133,6 +139,12 @@ function fzami_calculate_asr_method_field() {
         "<option value=\"0\" ".($options["asr_method"] == "0" ? 'selected="true"': '').">Standard</option>".
         "<option value=\"1\" ".($options["asr_method"] == "1" ? 'selected="true"': '').">Hanafi</option>".
         "</select>";
+}
+
+function fzami_jumah_date_data_field() {
+    $options = get_option('fzami_options');
+    echo "<input id='fzami_jumah_date_input' name='fzami_options[jumah_date]' type='date' value='" . $options['jumah_date'] . "' />".
+         "<br/><sub>If the khateebs change each week, you can specify which date the khateeb settings are good for.  If you always have the same khateebs, leave this field blank.</sub>";
 }
 
 function fzami_jumah_first_data_field() {
